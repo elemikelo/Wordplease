@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<ul>
+    {% if post_objects|length > 0 %}
+        {% for post in post_objects %}
+            <li><a href="{% url 'post_user_detail' post.blog post.id %}"><h2>{{ post.title }}</h2></a><br></li>
+            <li><a href="{% url 'post_user_detail' post.blog post.id %}"><img src="{{ post.url }}" alt="img" height="300px" width="400px"></a></li>
+            <li>{{ post.text_introduction }}</li>
+            <li>{{ post.category }}</li>
+            <li>{{ post.blog.owner.first_name }} {{ post.blog.owner.last_name }}</li>
+            <li>{{ post.published_date }}</li>
+            <li><br><br></li>
+        {% endfor %}
+    {% else %}
+        "No existe ningún post"
+    {% endif %}
+</ul>
+{% endblock %}

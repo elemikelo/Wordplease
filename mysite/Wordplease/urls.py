@@ -1,21 +1,23 @@
-"""Wordplease URL Configuration
 
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/1.10/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  url(r'^$', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  url(r'^$', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.conf.urls import url, include
-    2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
-"""
 from django.conf.urls import url
 from django.contrib import admin
 
+from blog.views import PostsListView, BlogsListView, BlogUserView, PostUserDetail, NewPostView
+from users.views import LoginView, logout
+
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
+    url(r'^$', PostsListView.as_view(), name='posts_list'),
+    url(r'^blogs/$', BlogsListView.as_view(), name='blogs_list'),
+    url(r'^blogs/(?P<username>[-\w]+)/$', BlogUserView.as_view(), name='blog_user'),
+    url(r'^blogs/(?P<username>[-\w]+)/(?P<post_pk>[0-9]+)$', PostUserDetail.as_view(), name='post_user_detail'),
+    url(r'new-post/$', NewPostView.as_view(), name="post_new"),
+
+    # Users URLS
+    url(r'^login$', LoginView.as_view(), name='users_login'),
+    url(r'^logout$', logout, name='users_logout'),
+
 ]
+# Change admin site title
+admin.site.site_header = ("Wordplease Administration")
+admin.site.site_title = ("Wordplease")

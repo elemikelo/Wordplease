@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.views import View
+from rest_framework.generics import get_object_or_404
 
 from blog.forms import PostForm
 from blog.models import Post, Blog
@@ -67,17 +68,11 @@ class BlogUserView(View):
         :param username: nombre de usuario
         :return: HttpResponse(render)
         """
-        try:
-            user_required = User.objects.select_related().get(username=username)
-            posts = user_required.blog.post_set.all()
-
-        except User.DoesNotExist:
-            return render(request, '404.html', {}, status=404)
-        except User.MultipleObjectsReturned:
-            return render("Existen varios user", status=300)
+        user_required = get_object_or_404(User, username=username)
+        posts = user_required.blog.post_set.all()
 
         context = {
-            'post_objects': posts[:20]
+            'post_objects': posts[:20] #limitado
         }
 
         return render(request, 'blog/blog_user.html', context)

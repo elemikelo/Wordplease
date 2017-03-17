@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from rest_framework import status
+from rest_framework.generics import get_object_or_404
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -36,14 +37,17 @@ class UsersAPI(APIView):
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class UserDeailAPI(APIView):
+class UserDetailAPI(APIView):
     """
     User Detail (GET), update user(PUT), delete user (DELETE)
 
     """
-    def get(self, request):
+    def get(self, request, pk):
         """
-        Return
+        Devuelve el perfil del usuario
         :param request:
         :return:
         """
+        user = get_object_or_404(User, pk=pk)
+        serializer = UserSerializer(user)
+        return Response(serializer.data)

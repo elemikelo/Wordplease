@@ -1,9 +1,22 @@
 
-from django.conf.urls import url
+from django.conf.urls import url, include
 from django.contrib import admin
+from rest_framework.routers import DefaultRouter
 
 from blog.views import PostsListView, BlogsListView, BlogUserView, PostUserDetail, NewPostView
 from users.views import LoginView, Register, LogoutView
+
+#from users.api import UserViewSet
+from users.api import UsersAPI
+#from blog.api import BlogsViewSet
+#from blog.api import PostsViewSet
+
+
+
+#router = DefaultRouter()
+#router.register("users", UsersAPI, base_name="users_api")
+#router.register("blogs", BlogsViewSet)
+#router.register("posts", PostsViewSet)
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -18,6 +31,9 @@ urlpatterns = [
     url(r'^logout$', LogoutView.as_view(), name='users_logout'),
     url(r'^signup$', Register.as_view(), name='register'),
 
+    # API Url
+    #url(r'^api/1.0/', include(router.urls)),
+    url(r'^api/1.0/users/$', UsersAPI.as_view(), name='users_api'),
 ]
 # Change admin site title
 admin.site.site_header = ("Wordplease Administration")

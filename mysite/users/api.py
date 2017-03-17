@@ -51,3 +51,15 @@ class UserDetailAPI(APIView):
         user = get_object_or_404(User, pk=pk)
         serializer = UserSerializer(user)
         return Response(serializer.data)
+
+    def delete(self, request, pk):
+        """
+        Borra un user
+        :param request: HttpRequest
+        :param pk: id del user q es su pk
+        :return: Response
+        """
+        user = get_object_or_404(User, pk=pk)
+        serializer = UserSerializer(user)
+        user.delete()
+        return Response(serializer.data, status=status.HTTP_204_NO_CONTENT)

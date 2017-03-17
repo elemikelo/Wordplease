@@ -35,7 +35,7 @@ urlpatterns = [
     # API Url
     #url(r'^api/1.0/', include(router.urls)),
     url(r'^api/1.0/users/$', UsersAPI.as_view(), name='users_api'),
-    url(r'^api/1.0/users/(?P<pk>[0-9]+)$', UserDetailAPI.as_view(), name='users_detail_api'),
+    url(r'^api/1.0/users/(?P<pk>[0-9]+)/?$', UserDetailAPI.as_view(), name='users_detail_api'),
 ]
 # Change admin site title
 admin.site.site_header = ("Wordplease Administration")

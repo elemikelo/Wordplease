@@ -17,7 +17,7 @@ class Category(models.Model):
 
 
 class Blog(models.Model):
-    owner = models.OneToOneField(User, related_name="owned_post")  # Un propietario a un blog
+    owner = models.OneToOneField(User)
     name = models.CharField(max_length=200)
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
@@ -35,7 +35,7 @@ class Post(models.Model):
     published_date = models.DateTimeField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
-    blog = models.ForeignKey(Blog, related_name="blog_owner") # Varios post a un blog
+    blog = models.ForeignKey(Blog)
 
     class Meta:
         db_table = 'blog_posts'

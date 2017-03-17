@@ -3,7 +3,7 @@ from django.conf.urls import url
 from django.contrib import admin
 
 from blog.views import PostsListView, BlogsListView, BlogUserView, PostUserDetail, NewPostView
-from users.views import LoginView, logout
+from users.views import LoginView, Register, LogoutView
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -15,7 +15,8 @@ urlpatterns = [
 
     # Users URLS
     url(r'^login$', LoginView.as_view(), name='users_login'),
-    url(r'^logout$', logout, name='users_logout'),
+    url(r'^logout$', LogoutView.as_view(), name='users_logout'),
+    url(r'^signup$', Register.as_view(), name='register'),
 
 ]
 # Change admin site title

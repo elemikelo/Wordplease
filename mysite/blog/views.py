@@ -1,5 +1,4 @@
-from audioop import reverse
-
+from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.shortcuts import render
@@ -22,7 +21,7 @@ class PostsListView(View):
         """
         # Todos los posts
 
-        posts = Post.objects.all()
+        posts = Post.objects.select_related("owner").all()
 
         # Los ultimos publicados
 
@@ -69,17 +68,14 @@ class BlogUserView(View):
         :return: HttpResponse(render)
         """
 
-        u = User.objects.filter(username=username).select_related()
-        b = Blog.objects.filter(owner=u).select_related()
+        posts = request.user.blog.post_set.order_by('-published_date').all()
 
-        if len(u) > 0 and len(b) > 0:
-            posts = Post.objects.order_by('-published_date').filter(blog=b).select_related()
-            context = {
-                'post_objects': posts[:20]
-            }
-            return render(request, 'blog/blog_user.html', context)
-        else:
-            return render(request, '404.html', {}, status=404)
+        context = {
+            'post_objects': posts[:20]
+        }
+
+        return render(request, 'blog/blog_user.html', context)
+
 
 
 class PostUserDetail(View):
@@ -87,7 +83,6 @@ class PostUserDetail(View):
     @method_decorator(login_required)
 
     def get(self, request, username, post_pk):
-
         """
         Carga la pagina de detalle de un post
         :param request: HttpRequest
@@ -95,25 +90,22 @@ class PostUserDetail(View):
         :param post_pk: id del post
         :return: HttpResponse
         """
-        # a partir del username en la url saco el id del blog que a su vez está relacionado al propietario del post
+        try:
+            user = User.objects.select_related().get(username=username).id
+            post = Post.objects.select_related().get(blog=user, pk=post_pk)
 
-        u = User.objects.filter(username=username).select_related()
-        b = Blog.objects.filter(owner=u).select_related()
-
-        if len(u) > 0 and len(b) > 0:
-            try:
-                post = Post.objects.select_related().get(blog=b, pk=post_pk)
-            except Post.DoesNotExist:
-                return render(request, '404.html', {}, status=404)
-            except Post.MultipleObjectsReturned:
-                return render("Existen varios post con ese identificador", status=300)
-
-            context = {
-                'post_user_detail': post
-            }
-            return render(request, 'blog/post_detail.html', context)
-        else:
+        except Post.DoesNotExist:
             return render(request, '404.html', {}, status=404)
+        except User.DoesNotExist:
+            return render(request, '404.html', {}, status=404)
+        except Post.MultipleObjectsReturned:
+            return render("Existen varios post con ese identificador", status=300)
+
+        context = {
+            'post_user_detail': post
+        }
+        return render(request, 'blog/post_detail.html', context)
+
 
 class NewPostView(View):
 
@@ -133,18 +125,19 @@ class NewPostView(View):
     def post(self, request):
 
         # Crear formulario
-        u = User.objects.filter(id=request.user.id).select_related()
-        b = Blog.objects.select_related().get(owner=u).id
-        post_with_user = Post(blog_id=b)
 
-        form = PostForm(request.POST, instance=post_with_user)
+        post_with_blog = Post(blog=request.user.blog)
+
+        form = PostForm(request.POST, instance=post_with_blog)
 
         # validar formulario
         if form.is_valid():
             post = form.save()
 
             # mensaje de exito
-            message = 'Post creado con éxito'
+            message = 'Post creado con éxito! <a href="{0}">Ver Post</a>'.format(
+                reverse('post_user_detail', args=[request.user.username, post.pk])  # genera la URL de detalle del post
+            )
             form = PostForm()
         else:
             # Mensaje de error

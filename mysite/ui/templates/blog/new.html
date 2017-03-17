@@ -6,6 +6,7 @@
 {%  autoescape off %}
 <div>{{ message }}</div>
 {% endautoescape %}
+<hr>
 <form method="post" novalidate>
     {% csrf_token %}
     {{ form.as_p }}

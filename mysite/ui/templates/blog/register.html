@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2>Register</h2>
+
+<div style="color:red">{{ error }}</div>
+
+<form method="post" novalidate>
+    {% csrf_token %}
+    {{ form.as_p }}
+    <div>
+        <button>Register</button>
+    </div>
+</form>
+
+{% endblock %}

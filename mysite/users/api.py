@@ -37,3 +37,13 @@ class UsersAPI(APIView):
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class UserDeailAPI(APIView):
+    """
+    User Detail (GET), update user(PUT), delete user (DELETE)
+
+    """
+    def get(self, request):
+        """
+        Return
+        :param request:
+        :return:
+        """

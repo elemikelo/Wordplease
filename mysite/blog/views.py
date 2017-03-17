@@ -67,8 +67,14 @@ class BlogUserView(View):
         :param username: nombre de usuario
         :return: HttpResponse(render)
         """
+        try:
+            user_required = User.objects.select_related().get(username=username)
+            posts = user_required.blog.post_set.all()
 
-        posts = request.user.blog.post_set.order_by('-published_date').all()
+        except User.DoesNotExist:
+            return render(request, '404.html', {}, status=404)
+        except User.MultipleObjectsReturned:
+            return render("Existen varios user", status=300)
 
         context = {
             'post_objects': posts[:20]

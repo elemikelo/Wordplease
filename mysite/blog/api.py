@@ -20,6 +20,9 @@ class PostsAPI(ListCreateAPIView):
     def get_serializer_class(self):
         return PostsListSerializer if self.request.method == "GET" else PostSerializer
 
+    def perform_create(self, serializer):
+        serializer.save(blog=self.request.user.blog)
+
 class PostDetailAPI(RetrieveUpdateDestroyAPIView):
     """
     Recuperacion actualizacion y borrado de un post

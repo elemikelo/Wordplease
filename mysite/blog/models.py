@@ -1,8 +1,16 @@
+
 from django.contrib.auth.models import User
 from django.core.validators import MaxLengthValidator
 from django.db import models
 from django.utils import timezone
 
+PUBLIC = 'PBC'
+PRIVATE = 'PVT'
+
+PRIVACY = (
+    (PUBLIC, 'Public'),
+    (PRIVATE, 'Private')
+)
 
 class Category(models.Model):
     name = models.CharField(max_length=10)
@@ -32,10 +40,11 @@ class Post(models.Model):
     body_post = models.TextField()
     url = models.URLField(blank=True, null=True)
     category = models.ManyToManyField(Category)
-    published_date = models.DateTimeField(blank=True, null=True)
+    published_date = models.DateTimeField()
     created_at = models.DateTimeField(auto_now_add=True)
     modified_at = models.DateTimeField(auto_now=True)
     blog = models.ForeignKey(Blog)
+    privacy = models.CharField(max_length=3, choices=PRIVACY, default=PUBLIC)
 
     class Meta:
         db_table = 'blog_posts'
@@ -46,4 +55,3 @@ class Post(models.Model):
 
     def __str__(self):
         return self.title
-

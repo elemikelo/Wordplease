@@ -1,17 +1,29 @@
-from rest_framework.response import Response
-from rest_framework.views import APIView
-
-from blog.models import Post
-from blog.serializers import PostSerializer
+from rest_framework.generics import ListCreateAPIView, ListAPIView, RetrieveUpdateDestroyAPIView
+from blog.models import Post, Blog
+from blog.serializers import PostSerializer, BlogSerializer, PostsListSerializer
 
 
-class PostsAPI(APIView):
+class BlogsAPI(ListAPIView):
     """
-    List(GET) and creates(POST) Post
+    Listado de Blog de la plataforma
     """
+    queryset = Blog.objects.all()
+    serializer_class = BlogSerializer
 
-    def get(self, request):
+class PostsAPI(ListCreateAPIView):
+    """
+    Listado de posts(GET) y creacion de un post(POST)
+    """
+    queryset = Post.objects.all().values("title", "url", "text_introduction", "published_date").order_by('-published_date')
+    serializer_class = PostSerializer
 
-        posts = Post.objects.all()
-        serializer = PostSerializer(posts, many=True)
-        return Response(serializer.data)
+    def get_serializer_class(self):
+        return PostsListSerializer if self.request.method == "GET" else PostSerializer
+
+class PostDetailAPI(RetrieveUpdateDestroyAPIView):
+    """
+    Recuperacion actualizacion y borrado de un post
+    """
+    queryset = Post.objects.all()
+    serializer_class = PostSerializer
+

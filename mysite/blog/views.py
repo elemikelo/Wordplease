@@ -16,17 +16,13 @@ class PostsListView(View):
     def get(self, request):
 
         """
-        Recupera todos los post
+        Recupera todos los post de la plataforma
         :param request: HttpRequest
         :return: HttpResponse
         """
-        # Todos los posts
+        # Todos los posts ordenados por fecha de publicacion
 
-        posts = Post.objects.select_related("owner").all()
-
-        # Los ultimos publicados
-
-        posts = Post.objects.order_by('-published_date')
+        posts = Post.objects.select_related().all().order_by('-published_date')
 
         context = {
             'post_objects': posts[:10]
@@ -48,7 +44,7 @@ class BlogsListView(View):
         :return: HttpResponse
 
         """
-        blogs = Blog.objects.all()
+        blogs = Blog.objects.all().values("name")
 
         context = {
             'blog_objects': blogs
@@ -69,7 +65,7 @@ class BlogUserView(View):
         :return: HttpResponse(render)
         """
         user_required = get_object_or_404(User, username=username)
-        posts = user_required.blog.post_set.all()
+        posts = user_required.blog.post_set.all().order_by('-published_date')
 
         context = {
             'post_objects': posts[:20] #limitado

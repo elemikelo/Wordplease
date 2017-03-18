@@ -5,7 +5,7 @@ from rest_framework.exceptions import ValidationError
 
 class UserSerializer(serializers.Serializer):
 
-    id = serializers.ReadOnlyField() # Se autogenera por eso es ReadOnlyField
+    id = serializers.ReadOnlyField()
     username = serializers.CharField()
     first_name = serializers.CharField()
     last_name = serializers.CharField()

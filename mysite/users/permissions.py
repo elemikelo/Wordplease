@@ -1,6 +1,7 @@
 from rest_framework.permissions import BasePermission
 
 class UserPermission(BasePermission):
+    my_safe_permission = ['GET', 'PUT', 'DELETE']
 
     def has_permission(self, request, view):
         """
@@ -9,18 +10,13 @@ class UserPermission(BasePermission):
         :param view: UserApi/UserDetailAPI
         :return: True si puede, False si no puede
         """
-       # cualquiera autentica puede acceder al detalle para ver , actualizar o borrar
+        # Post Create --> cualquiera
 
-        if request.user.is_authenticated and view.action in ("retrieve", "update", "destroy"):
+        if request.method == 'POST':
             return True
 
-        # si es superadmin y quiere acceder al listado
-        if request.user.is_superuser and view.action == "list":
-            return True
-
-        # cualquier puede crear un usuario (POST)
-
-        if view.action == "create":
+        # GET Detail, --> Superuser or sameUser
+        if request.user.is_authenticated and request.method in self.my_safe_permission:
             return True
 
         return False
@@ -34,6 +30,5 @@ class UserPermission(BasePermission):
         :param obj: User
         :return: True si puede, False si no puede
         """
-        # si es admin o es el mismo le dejamos
-
+        # Permisos --> admin sobre si mismo o administrador
         return request.user.is_superuser or request.user == obj

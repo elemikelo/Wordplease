@@ -1,80 +1,27 @@
 from django.contrib.auth.models import User
-from rest_framework import status
-from rest_framework.generics import get_object_or_404
-from rest_framework.response import Response
-from rest_framework.views import APIView
+from rest_framework.generics import RetrieveUpdateDestroyAPIView, CreateAPIView
+from rest_framework.permissions import IsAuthenticated
 
+from users.permissions import UserPermission
 from users.serializers import UserSerializer
 
 
-class UsersAPI(APIView):
-
+class UsersAPI(CreateAPIView):
     """
-    Lista de post (GET) y creación de usuarios(POST)
+    Endpoint creación de usuarios(POST)
     """
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
 
-    def get(self, request):
-        """
-        Recuperamos todos los usuarios del sistema
-        :param request: HttpRequest
-        :return: Response
-        """
-        users = User.objects.all()
-        serializer = UserSerializer(users, many=True)
-        # Objeto response de rest_framework q se encarga de devolver los usuarios en el formato de la peticion
-        return Response(serializer.data)
 
-    def post(self, request):
-        """
-        Creaccion de usuarios
-        :param request: HttpRequest
-        :return: Response
-        """
-        serializer = UserSerializer(data=request.data) # en rest-framework siempre con data no con POST
-        if serializer.is_valid():
-            user = serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-class UserDetailAPI(APIView):
+class UserDetailAPI(RetrieveUpdateDestroyAPIView):
     """
-    User Detail (GET), update user(PUT), delete user (DELETE)
-
+    Endpoint Recuperacion actualizacion y borrado de Usuario
     """
-    def get(self, request, pk):
-        """
-        Devuelve el perfil del usuario
-        :param request:
-        :return:
-        """
-        user = get_object_or_404(User, pk=pk)
-        serializer = UserSerializer(user)
-        return Response(serializer.data)
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = (UserPermission,)
 
-    def put(self, request, pk):
-        """
-        Actualiza usuario
-        :param request: HttpRequest
-        :param pk: primary key del usuario
-        :return: Response
-        """
-        user = get_object_or_404(User, pk=pk)
-        serializer = UserSerializer(user, data=request.data)
-        if serializer.is_valid():
-            user = serializer.save()
-            return Response(serializer.data, status=status.HTTP_202_ACCEPTED)
-        else:
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, pk):
-        """
-        Borra un user
-        :param request: HttpRequest
-        :param pk: id del user q es su pk
-        :return: Response
-        """
-        user = get_object_or_404(User, pk=pk)
-        serializer = UserSerializer(user)
-        user.delete()
-        return Response(serializer.data, status=status.HTTP_204_NO_CONTENT)
+
+

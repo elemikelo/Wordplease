@@ -3,7 +3,7 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from rest_framework.routers import DefaultRouter
 
-from blog.api import PostsAPI
+from blog.api import PostsAPI, BlogsAPI, PostDetailAPI
 from blog.views import PostsListView, BlogsListView, BlogUserView, PostUserDetail, NewPostView
 from users.views import LoginView, Register, LogoutView
 
@@ -33,13 +33,18 @@ urlpatterns = [
     url(r'^logout$', LogoutView.as_view(), name='users_logout'),
     url(r'^signup$', Register.as_view(), name='register'),
 
-    # API Url
+    # API Users
     #url(r'^api/1.0/', include(router.urls)),
     url(r'^api/1.0/users/$', UsersAPI.as_view(), name='users_api'),
     url(r'^api/1.0/users/(?P<pk>[0-9]+)/?$', UserDetailAPI.as_view(), name='users_detail_api'),
 
+    # API Blogs
+    url(r'^api/1.0/blogs/$', BlogsAPI.as_view(), name='blogs_api'),
+
     # API Posts
     url(r'^api/1.0/posts/$', PostsAPI.as_view(), name='posts_api'),
+    url(r'^api/1.0/posts/(?P<pk>[0-9]+)/$', PostDetailAPI.as_view(), name='post_detail_api'),
+
 
 ]
 # Change admin site title

@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 <ul>
+    <h1>Últimos posts</h1>
     {% if post_objects|length > 0 %}
         {% for post in post_objects %}
             <li><a href="{% url 'post_user_detail' post.blog post.id %}"><h2>{{ post.title }}</h2></a><br></li>

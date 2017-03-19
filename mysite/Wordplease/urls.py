@@ -3,22 +3,13 @@ from django.conf.urls import url, include
 from django.contrib import admin
 from rest_framework.routers import DefaultRouter
 
-from blog.api import PostsAPI, BlogsAPI, PostDetailAPI
+from blog.api import BlogsAPI, PostsViewSet
 from blog.views import PostsListView, BlogsListView, BlogUserView, PostUserDetail, NewPostView
 from users.views import LoginView, Register, LogoutView
-
-#from users.api import UserViewSet
 from users.api import UsersAPI, UserDetailAPI
 
-#from blog.api import BlogsViewSet
-#from blog.api import PostsViewSet
-
-
-
-#router = DefaultRouter()
-#router.register("users", UsersAPI, base_name="users_api")
-#router.register("blogs", BlogsViewSet)
-#router.register("posts", PostsViewSet)
+router = DefaultRouter()
+router.register("posts", PostsViewSet)
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -34,7 +25,6 @@ urlpatterns = [
     url(r'^signup$', Register.as_view(), name='register'),
 
     # API Users
-    #url(r'^api/1.0/', include(router.urls)),
     url(r'^api/1.0/users/$', UsersAPI.as_view(), name='users_api'),
     url(r'^api/1.0/users/(?P<pk>[0-9]+)/?$', UserDetailAPI.as_view(), name='users_detail_api'),
 
@@ -42,9 +32,7 @@ urlpatterns = [
     url(r'^api/1.0/blogs/$', BlogsAPI.as_view(), name='blogs_api'),
 
     # API Posts
-    url(r'^api/1.0/posts/$', PostsAPI.as_view(), name='posts_api'),
-    url(r'^api/1.0/posts/(?P<pk>[0-9]+)/$', PostDetailAPI.as_view(), name='post_detail_api'),
-
+    url(r'^api/1.0/', include(router.urls)),
 
 ]
 # Change admin site title

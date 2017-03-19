@@ -10,6 +10,15 @@ class UserPermission(BasePermission):
         :return: True si puede, False si no puede
 
         """
+        # Si quiere ver el listado de posts
+        if view.action == 'list':
+            return True
+
+        # Si quiere ver el detalle del post
+        if view.action == 'retrieve':
+            return True
+
+
         # Si está autenticado puede crear el post
         if request.user.is_authenticated and view.action == "create":
             return True
@@ -25,12 +34,21 @@ class UserPermission(BasePermission):
         """
         define si el usuario  puede realizar la accion sobre el objeto que quiere realzarla
         :param request: HttpRequest
-        :param view: UserApi/UserDetailAPI
-        :param obj: User
+        :param view: view.action ( vistas del modelo)
+        :param obj: Post
         :return: True si puede, False si no puede
+
         """
+
+        if view.action == 'retrieve' or 'list':
+            return True
+
         # si es admin o el propietario del post
-        return request.user.is_superuser or request.user == obj
+        if view.action == "update" or view.action == "destroy":
+            if request.user.is_superuser or obj in request.user.blog.post_set.all():
+                return True
+
+
 
 
 

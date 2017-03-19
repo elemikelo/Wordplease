@@ -8,7 +8,7 @@ class BlogSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Blog
-        fields = ["name",]
+        fields = ["name"]
 
 class PostsListSerializer(serializers.ModelSerializer):
 

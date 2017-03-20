@@ -27,7 +27,6 @@ class PostQuerySet(object):
 
 class PostsListView(View, PostQuerySet):
 
-    #@method_decorator(login_required)
 
     def get(self, request):
 
@@ -69,7 +68,7 @@ class BlogUserView(View):
     def get(self, request, username):
 
         """
-        Recupera todos los post del usuario autenticado
+        Recupera todos los post del blog
         :param request: HttpResponse
         :param username: nombre de usuario
         :return: HttpResponse(render)

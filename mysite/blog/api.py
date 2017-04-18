@@ -3,7 +3,7 @@ from rest_framework.generics import ListAPIView
 from rest_framework.viewsets import ModelViewSet
 
 from blog.models import Post, Blog
-from blog.permissions import UserPermission
+from blog.permissions import PostPermission
 from blog.serializers import PostSerializer, BlogSerializer, PostsListSerializer
 from blog.views import PostQuerySet
 
@@ -25,7 +25,7 @@ class PostsViewSet(PostQuerySet, ModelViewSet):
     Modelo que incluye todos los Endpoints
     """
     queryset = Post.objects.all().order_by('-published_date')
-    permission_classes = (UserPermission,)
+    permission_classes = (PostPermission,)
     filter_backends = (SearchFilter, OrderingFilter)
     search_fields = ('title', 'body_post')
     ordering_fields = ('title', 'published_date')

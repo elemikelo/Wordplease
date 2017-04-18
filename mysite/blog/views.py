@@ -43,7 +43,7 @@ class PostsListView(View, PostQuerySet):
 
 class BlogsListView(View):
 
-    @method_decorator(login_required)
+
 
     def get(self, request):
 
@@ -94,7 +94,7 @@ class BlogUserView(View):
 
 class PostUserDetail(View, PostQuerySet):
 
-    @method_decorator(login_required)
+
 
     def get(self, request, username, post_pk):
         """

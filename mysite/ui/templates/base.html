@@ -42,10 +42,10 @@
         |
         <a href="{% url 'blog_user' user.username %}" title="My Blog">My Blog</a>
         |
-        <a href="{% url 'blogs_list' %}" title="Other Blogs">Other blogs</a>
-        |
         <a href="{% url 'post_new' %}" title="New Post">New Post</a>
     {% endif %}
+        |
+    <a href="{% url 'blogs_list' %}" title="Other Blogs">Other blogs</a>
     <hr>
     {% block content %} BLOG {% endblock %}
 

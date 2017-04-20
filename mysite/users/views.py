@@ -105,7 +105,7 @@ class Register(View):
 
                 # Creo blog al registrar con el nombre del usuario
                 new_blog = Blog()
-                new_blog.name = username # nombre por defecto
+                new_blog.name = form.cleaned_data.get('blog_name') # nombre por defecto
                 new_blog.owner = request.user
                 new_blog.save()
 

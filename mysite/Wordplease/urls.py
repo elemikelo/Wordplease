@@ -6,10 +6,14 @@ from rest_framework.routers import DefaultRouter
 from blog.api import BlogsAPI, PostsViewSet
 from blog.views import PostsListView, BlogsListView, BlogUserView, PostUserDetail, NewPostView
 from users.views import LoginView, Register, LogoutView
-from users.api import UsersAPI, UserDetailAPI
+from users.api import UserViewSet
 
 router = DefaultRouter()
 router.register("posts", PostsViewSet)
+
+router = DefaultRouter()
+router.register('users', UserViewSet)
+
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
@@ -25,8 +29,7 @@ urlpatterns = [
     url(r'^signup$', Register.as_view(), name='register'),
 
     # API Users
-    url(r'^api/1.0/users/$', UsersAPI.as_view(), name='users_api'),
-    url(r'^api/1.0/users/(?P<pk>[0-9]+)/?$', UserDetailAPI.as_view(), name='users_detail_api'),
+    url(r'^api/1.0/', include(router.urls)),
 
     # API Blogs
     url(r'^api/1.0/blogs/$', BlogsAPI.as_view(), name='blogs_api'),

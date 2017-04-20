@@ -1,26 +1,19 @@
 from django.contrib.auth.models import User
-from rest_framework.generics import RetrieveUpdateDestroyAPIView, CreateAPIView
-from rest_framework.permissions import IsAuthenticated
-
+from rest_framework.viewsets import ModelViewSet
 from users.permissions import UserPermission
-from users.serializers import UserSerializer
+from users.serializers import UserSerializer, RegisterSerializer
 
 
-class UsersAPI(CreateAPIView):
-    """
-    Endpoint creación de usuarios(POST)
-    """
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-
-
-class UserDetailAPI(RetrieveUpdateDestroyAPIView):
-    """
-    Endpoint Recuperacion actualizacion y borrado de Usuario
-    """
+class UserViewSet(ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = (UserPermission,)
+
+    def get_serializer_class(self):
+        """
+        Returns SinupSerializer when trying to create a new user
+        """
+        return RegisterSerializer if self.action in ['create', 'update'] else UserSerializer
 
 
 

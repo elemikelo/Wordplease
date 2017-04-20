@@ -1,44 +1,62 @@
+from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import User
 from rest_framework import serializers
-from rest_framework.exceptions import ValidationError
+from blog.models import Blog
 
 
-class UserSerializer(serializers.Serializer):
-
-    id = serializers.ReadOnlyField()
-    username = serializers.CharField()
-    first_name = serializers.CharField()
-    last_name = serializers.CharField()
-    email = serializers.EmailField()
-    password = serializers.CharField()
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = '__all__'
 
 
-    # Datos recibidos del Post y se encarga de parsearlos
+class RelatedObjectDoesNotExist(object):
+    pass
+
+
+class RegisterSerializer(UserSerializer):
+    blog_name = serializers.CharField()
+
+    class Meta(UserSerializer.Meta):
+        pass
+
+    def update_user_with_blog_info(self, user, blog_name):
+        try:
+            user.blog.name = blog_name
+            user.blog.save()
+            user.blog_name = blog_name
+        except Blog.DoesNotExist:
+            Blog.objects.create(owner=user, name=blog_name)
+            user.blog_name = blog_name
+        return user
+
+    def extract_blog_data_and_encrypt_password(self, validated_data):
+        blog_name = validated_data.pop('blog_name')
+        password = validated_data.get('password')
+        if password:
+            validated_data['password'] = make_password(password)
+        validated_data['is_active'] = True
+        return (blog_name)
 
     def create(self, validated_data):
-        return self.update(User(), validated_data)
+        """
+        Extrae los datos del blog de datos validados, crea al usuario y luego crea el blog
+
+        """
+        blog_name = self.extract_blog_data_and_encrypt_password(validated_data)
+        user = super(UserSerializer, self).create(validated_data)
+        if user:
+            self.update_user_with_blog_info(user, blog_name)
+        return user
 
     def update(self, instance, validated_data):
-        instance.first_name = validated_data.get('first_name', instance.first_name)
-        instance.last_name = validated_data.get('last_name', instance.last_name)
-        instance.username = validated_data.get('username', instance.username)
-        instance.email = validated_data.get('email', instance.email)
-        if validated_data.get('password'):
-            instance.set_password(validated_data.get('password'))
-        instance.save()
-        return instance
+        """
+        Extrae los datos del blog de datos validados, crea al usuario y luego crea el blog
 
-    def validate(self, attrs):
-        # Validar si el usuario que se intenta crear ya existe
-        if self.instance is None and User.objects.filter(username=attrs.get("username")).exists():
-            raise ValidationError("Username already exists")
-
-        # Actualizar usuario cambiando el username
-        if self.instance is not None and self.instance.username != attrs.get("username") and User.objects.filter(username=attrs.get("username")).exists():
-            raise ValidationError("Username already exists")
-
-        return attrs
-
-        # Actualizar el usuario cambiando el username, si el username no está usado
+        """
+        blog_name = self.extract_blog_data_and_encrypt_password(validated_data)
+        user = super(UserSerializer, self).update(instance, validated_data)
+        self.update_user_with_blog_info(user, blog_name)
+        return user
 
 

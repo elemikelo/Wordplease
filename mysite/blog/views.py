@@ -105,12 +105,9 @@ class PostUserDetail(View, PostQuerySet):
         :return: HttpResponse
         """
         try:
-            user = User.objects.select_related().get(username=username).id
-            post = Post.objects.select_related().get(blog=user, pk=post_pk)
+            post = Post.objects.select_related().get(pk=post_pk)
 
         except Post.DoesNotExist:
-            return render(request, '404.html', {}, status=404)
-        except User.DoesNotExist:
             return render(request, '404.html', {}, status=404)
         except Post.MultipleObjectsReturned:
             return render("Existen varios post con ese identificador", status=300)
